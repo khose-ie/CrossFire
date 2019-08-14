@@ -38,9 +38,9 @@ RUN echo "pid = /var/run/stunnel/stunnel.pid" >> /etc/stunnel/stunnel.conf; \
     echo "cert = /etc/stunnel/stunnel.pem" >> /etc/stunnel/stunnel.conf;
 
 RUN mkdir -p /var/log/stunnel; \
-    chown -R stunnel:stunnel /var/log/stunnel; \
+    chown -R stunnel4:stunnel4 /var/log/stunnel; \
     mkdir -p /var/run/stunnel; \
-    chown -R stunnel:stunnel /var/run/stunnel;
+    chown -R stunnel4:stunnel4 /var/run/stunnel;
 
 
 RUN touch docker-startup.sh; \
