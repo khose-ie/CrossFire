@@ -29,12 +29,12 @@ To use the HTTP proxy functon, you should has a proxy server and a proxy client,
 
     ```
     cd CrossFire
-    docker build -t CrossFireServer:release .
+    docker build -t crossfire-server:alpine .
     ```
 5. **Start docker container**
 
     ```
-    docker run -p 8000:8000 --name cross_fire CrossFireServer:release
+    docker run -p 8000:8000 --name cross_fire crossfire-server:alpine
     ```
 ### Next we build the HTTP client
 1. **Install docker**
@@ -65,7 +65,7 @@ To use the HTTP proxy functon, you should has a proxy server and a proxy client,
 
     The client docker file is in branch "client", you need to checkout it first.
     ```
-    docker build -t CrossFireClient:release .
+    docker build -t crossfire-client:alpine .
     ```
     Please pay attention here, you need to create your own certifation first before build the docker image.
     And this certifation must named stunnel.pem, the file in repository is a blank file, you need to create you own to replease it.
@@ -76,7 +76,7 @@ To use the HTTP proxy functon, you should has a proxy server and a proxy client,
 5. **Start docker container**
 
     ```
-    docker run -p 8000:8000 --name cross_fire_client CrossFireClient:release
+    docker run -p 8000:8000 --name cross_fire_client crossfire-client:alpine
     ```
 6. **Set proxy**
 
@@ -125,7 +125,7 @@ Change "8000" to any other port not in use, like 8080.
 
 Last, you need to expose different port when you start up docker:
 ```
-docker run -p 8000:8080 --name cross_fire_client CrossFireClient:release
+docker run -p 8000:8080 --name cross_fire_client crossfire-client:alpine
 ```
 
 ### Could you show some information about these branches ?
