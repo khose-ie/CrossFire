@@ -16,35 +16,55 @@ To use the HTTP proxy functon, you should has a proxy server and a proxy client,
     You can fellow the [docker official document](https://docs.docker.com/) to install the docker for you system.
 
 2. **Install git**
+
     ```
     sudo apt-get install git
     ```
 3. **Clone this repository**
+
     ```
     git clone https://github.com/Kloye/CrossFire.git
     ```
 4. **Build the docker image**
+
     ```
     cd CrossFire
     docker build -t CrossFireServer:release .
     ```
 5. **Start docker container**
+
     ```
     docker run -p 8000:8000 --name cross_fire CrossFireServer:release
     ```
 ### Next we build the HTTP client
-1. ** Install docker**
+1. **Install docker**
     
     You can fellow the [docker official document](https://docs.docker.com/) to install the docker for you system.
 2. **Install git**
+
     ```
     sudo apt-get install git
     ```
-4. **Build the docker image**
-    The client docker file is in branch "client", you need to checkout it first.
+3. **Write your customs configuration**
+
+    And then you may need to modify something in Dockerfile, it is the IP address for your proxy server.
+    Because I couldn't know it and wrote it for you, but don't warry it is simple.
+    
+    First open the Dockerfile
     ```
     cd CrossFire
     git checkout client
+    vi Dockerfile
+    ```
+    Second find below line:
+    ```
+    echo "connect = 192.168.0.1:8000" >> /etc/stunnel/stunnel.conf; \
+    ```
+    You can see the "192.168.0.1:0\8000" is your IP and port of your server, so chagne it, that is OK.
+4. **Build the docker image**
+
+    The client docker file is in branch "client", you need to checkout it first.
+    ```
     docker build -t CrossFireClient:release .
     ```
     Please pay attention here, you need to create your own certifation first before build the docker image.
@@ -54,22 +74,19 @@ To use the HTTP proxy functon, you should has a proxy server and a proxy client,
     openssl req -new -x509 -days 365 -nodes -out stunnel.pem -keyout stunnel.pem
     ```
 5. **Start docker container**
+
     ```
     docker run -p 8000:8000 --name cross_fire_client CrossFireClient:release
     ```
 6. **Set proxy**
+
     Than you need to set the proxy to local port.
     ```
-    export http_proxy=http://127.0.0.1:8000/
-    ```
-    Please attention, if you want to deploy the server and the client in the same phystical computer, the exposed port should be different, like that:
-    ```
-    docker run -p 8000:8000 --name cross_fire_server CrossFireServer:release
-    docker run -p 8000:8080 --name cross_fire_client CrossFireClient:release
+    export http_proxy=http://127.0.0.1:8000/ # You can change 127.0.0.1 to your IP
     ```
     Now the client listen port 8080 and you should set your proxy like that:
     ```
-    export http_proxy=http://127.0.0.1:8080/
+    export http_proxy=http://127.0.0.1:8080/ # You can change 127.0.0.1 to your IP
     ```
 
 ## Some Questions
@@ -82,5 +99,39 @@ Of course, you can download a [windows edition stunnel client](https://www.stunn
 
 Of course, you can do it yourself or checkout to branch "server_single" to get it.
 
+### Can I deploy server and client on one physical computer ?
 
-    
+Oh, if not necessary, it is better don't to do it. But if you inisit on it, so...
+
+First you can deploy the server in the normally way.
+
+Second, after you delpoied the server, you should check its IP address, use below comments:
+```
+docker exec -it cross_fire_server /bin/bash
+ifconfig
+```
+Remember the IP address and then write them into your client Dockerfile:
+```
+echo "connect = 192.168.0.1:8000" >> /etc/stunnel/stunnel.conf; \
+```
+Replace "192.168.0.1" to your server IP address.
+
+Third, you also need to change a port for your client because the 8000 has been used by server:
+
+```
+echo "accept = 8000" >> /etc/stunnel/stunnel.conf; \
+```
+Change "8000" to any other port not in use, like 8080.
+
+Last, you need to expose different port when you start up docker:
+```
+docker run -p 8000:8080 --name cross_fire_client CrossFireClient:release
+```
+
+### Could you show some information about these branches ?
+    master          ==>     HTTP proxy server docker image with alpine 3.10.0 with squid and stunnel.
+    server_ubuntu   ==>     HTTP proxy server docker image with ubuntu 18.04 with squid and stunnel.
+    server_single   ==>     HTTP proxy server docker image with alpine 3.10.0, squid and stunnel in two docker container.
+    client          ==>     HTTP proxy client docker image with alpine 3.10.0 with stunnel.
+    client_ubuntu   ==>     HTTP proxy client docker image with ubuntu 18.04 with stunnel.
+
