@@ -1,0 +1,20 @@
+version: "3"
+services:
+    squid:
+        build:
+            context: .
+            dockerfile: Dockerfile-squid
+        image: crossfire-server-squid:1.0.0-alpine
+        container_name: crossfire-server-squid
+        restart: unless-stopped
+    stunnel:
+        build:
+            context: .
+            dockerfile: Dockerfile-stunnel
+        image: crossfire-server-stunnel:1.0.0-alpine
+        container_name: crossfire-server-stunnel
+        restart: unless-stopped
+        ports:
+            - "8000:8000"
+#        volumes:
+#            - "/root/docker-data/crossfire-server/stunnel:/var/log/stunnel"
