@@ -1,25 +1,15 @@
 FROM ubuntu:18.04
 
-#RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories;
-
 RUN apt-get update
 RUN apt-get install -y squid \
-            stunnel4;
-#RUN gzip -d  /usr/share/doc/stunnel4/examples/stunnel.conf-sample.gz
+                       stunnel4;
 
 WORKDIR /root
 
 COPY stunnel.pem /etc/stunnel/stunnel.pem
-#COPY /usr/share/doc/stunnel4/examples/stunnel.conf-sample /etc/stunnel/stunnel.conf
 
 RUN sed -i 's/http_access deny all/http_access allow all/g' /etc/squid/squid.conf; \
     sed -i 's/http_port 3128/http_port 127.0.0.1:3128/g' /etc/squid/squid.conf;
-
-#RUN sed -i 's/run\/stunnel.pid/run\/stunnel\/stunnel.pid/g' /etc/stunnel/stunnel.conf; \
-#    sed -i 's/#compression = rle/compression = rle/g' /etc/stunnel/stunnel.conf; \
-#    sed -i 's/#verify = 2/verify = 3/g' /etc/stunnel/stunnel.conf; \
-#    sed -i 's/#CAfile = \/etc\/stunnel\/certs.pem/CAfile = \/etc\/stunnel\/stunnel.pem/g' /etc/stunnel/stunnel.conf; \
-#    sed -i 's/client = yes/#client = yes/g' /etc/stunnel/stunnel.conf;
 
 RUN echo "pid = /var/run/stunnel/stunnel.pid" >> /etc/stunnel/stunnel.conf; \
     echo "CAfile = /etc/stunnel/stunnel.pem" >> /etc/stunnel/stunnel.conf; \
